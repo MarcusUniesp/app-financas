@@ -17,6 +17,7 @@ function AuthProvider({ children }) {
         email: email,
       });
 
+      console.log("Usuário cadastrado com sucesso");
       navigation.goBack();
     } catch (err) {
       console.log("Erro ao cadastrar usuário", err);
