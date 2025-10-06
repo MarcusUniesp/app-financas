@@ -9,6 +9,7 @@ function AuthProvider({ children }) {
 
   const navigation = useNavigation();
 
+  //? Create a new user
   async function signUp(name, password, email) {
     try {
       await api.post("/users", {
@@ -24,8 +25,23 @@ function AuthProvider({ children }) {
     }
   }
 
+  //? Login function
+  async function signIn(email, password) {
+    try {
+      await api.post("/login", {
+        email: email,
+        password: password,
+      });
+
+      console.log("Login realizado com sucesso");
+      setUser({ email });
+    } catch (error) {
+      console.log("Erro ao realizar login", error);
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ signed: !!user, user, signUp }}>
+    <AuthContext.Provider value={{ signed: !!user, user, signUp, signIn }}>
       {children}
     </AuthContext.Provider>
   );
