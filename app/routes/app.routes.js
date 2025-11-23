@@ -6,7 +6,11 @@ const AppDrawer = createDrawerNavigator();
 function AppRoutes() {
   return (
     <AppDrawer.Navigator>
-      <AppDrawer.Screen name="Home" component={Home} />
+      <AppDrawer.Screen
+        name="Home"
+        component={Home}
+        options={{ title: "Minhas movimentações", drawerLabel: "Home" }}
+      />
     </AppDrawer.Navigator>
   );
 }
