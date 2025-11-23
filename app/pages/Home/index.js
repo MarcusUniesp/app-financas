@@ -12,13 +12,16 @@ import {
   TypeText,
   MovValue,
 } from "./styles";
-import { FlatList } from "react-native";
+import { FlatList, Modal, View, TouchableOpacity, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
+import { Calendar } from "react-native-calendars";
 import ConfirmDialog from "../../components/Modal";
 
 export default function Home() {
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [calendarVisible, setCalendarVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const handleDelete = () => {
     console.log("DELETADO!");
@@ -61,7 +64,10 @@ export default function Home() {
 
           <Section>
             <SectionTitleRow>
-              <SectionIcon name="calendar-outline" />
+              <SectionIcon
+                name="calendar-outline"
+                onPress={() => setCalendarVisible(true)}
+              />
               <SectionTitle>Ultimas movimentações</SectionTitle>
             </SectionTitleRow>
           </Section>
@@ -89,6 +95,70 @@ export default function Home() {
             onCancel={() => setDialogVisible(false)}
             onConfirm={handleDelete}
           />
+
+          {calendarVisible && (
+            <Modal
+              transparent
+              animationType="fade"
+              visible={calendarVisible}
+              onRequestClose={() => setCalendarVisible(false)}
+            >
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: 20,
+                }}
+              >
+                <View
+                  style={{
+                    backgroundColor: "#fff",
+                    borderRadius: 12,
+                    padding: 20,
+                    width: "100%",
+                  }}
+                >
+                  <Calendar
+                    onDayPress={(day) => {
+                      console.log("Data selecionada:", day.dateString);
+                      setSelectedDate(day.dateString);
+                      setCalendarVisible(false);
+                    }}
+                    theme={{
+                      todayTextColor: "#3B3DBF",
+                      selectedDayBackgroundColor: "#3B3DBF",
+                      selectedDayTextColor: "#fff",
+                      arrowColor: "#3B3DBF",
+                    }}
+                  />
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: "#3B3DBF",
+                      paddingVertical: 12,
+                      borderRadius: 8,
+                      marginTop: 15,
+                    }}
+                    onPress={() => {
+                      setCalendarVisible(false);
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#fff",
+                        textAlign: "center",
+                        fontSize: 16,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Filtrar
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+          )}
         </>
       }
     />
