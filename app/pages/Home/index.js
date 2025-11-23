@@ -14,8 +14,17 @@ import {
 } from "./styles";
 import { FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import ConfirmDialog from "../../components/Modal";
 
 export default function Home() {
+  const [dialogVisible, setDialogVisible] = useState(false);
+
+  const handleDelete = () => {
+    console.log("DELETADO!");
+    setDialogVisible(false);
+  };
+
   const data = [
     { id: 1, type: "despesa", value: 35.3 },
     { id: 2, type: "receita", value: 780.3 },
@@ -56,21 +65,32 @@ export default function Home() {
               <SectionTitle>Ultimas movimentações</SectionTitle>
             </SectionTitleRow>
           </Section>
+
+          <FlatList
+            data={data}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={({ item }) => (
+              <MovCard onPress={() => setDialogVisible(true)}>
+                <TypeBadge type={item.type}>
+                  <Ionicons
+                    name={item.type === "despesa" ? "arrow-down" : "arrow-up"}
+                    size={14}
+                    color="#fff"
+                  />
+                  <TypeText>{item.type}</TypeText>
+                </TypeBadge>
+                <MovValue>R$ {item.value}</MovValue>
+              </MovCard>
+            )}
+          />
+
+          <ConfirmDialog
+            visible={dialogVisible}
+            onCancel={() => setDialogVisible(false)}
+            onConfirm={handleDelete}
+          />
         </>
       }
-      renderItem={({ item }) => (
-        <MovCard>
-          <TypeBadge type={item.type}>
-            <Ionicons
-              name={item.type === "despesa" ? "arrow-down" : "arrow-up"}
-              size={14}
-              color="#fff"
-            />
-            <TypeText>{item.type}</TypeText>
-          </TypeBadge>
-          <MovValue>R$ {item.value}</MovValue>
-        </MovCard>
-      )}
     />
   );
 }
