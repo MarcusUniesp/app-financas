@@ -3,14 +3,14 @@ import styled from "styled-components/native";
 
 export const DrawerContainer = styled(View)`
   flex: 1;
-  background-color: #f0f4ff;
+  background-color: white;
 `;
 
 export const DrawerHeader = styled(View)`
   align-items: center;
   padding-top: 30px;
   padding-bottom: 20px;
-  background-color: #f0f4ff;
+  background-color: white;
 `;
 
 export const DrawerLogo = styled.Image`
