@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ActivityIndicator,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
@@ -13,9 +12,9 @@ import { createReceive } from "../../services/financeService";
 
 export default function Register() {
   const [tipo, setTipo] = useState("receita");
-  const [nome, setNome] = useState(""); // para o campo "Nome"
-  const [valor, setValor] = useState(""); // para o campo "Valor"
-  const [loading, setLoading] = useState(false); // para o botão de loading
+  const [nome, setNome] = useState("");
+  const [valor, setValor] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const formatDate = (date) => {
     const d = new Date(date);
@@ -26,39 +25,23 @@ export default function Register() {
   };
 
   const handleRegistrar = async () => {
-    // Validação simples
-    if (!nome.trim()) {
-      Alert.alert("Atenção", "Informe um nome para a movimentação.");
-      return;
-    }
-    if (!valor || isNaN(valor) || Number(valor) <= 0) {
-      Alert.alert("Atenção", "Informe um valor válido.");
-      return;
-    }
-
     setLoading(true);
 
     try {
       const payload = {
         description: nome.trim(),
         value: parseFloat(valor),
-        type: tipo, // "receita" ou "despesa"
-        date: formatDate(new Date()), // ex: "30/11/2025"
+        type: tipo,
+        date: formatDate(new Date()),
       };
 
       await createReceive(payload);
-
-      Alert.alert("Sucesso!", "Registro realizado com sucesso!");
 
       // Limpa os campos
       setNome("");
       setValor("");
     } catch (error) {
       console.error("Erro ao registrar:", error);
-      Alert.alert(
-        "Erro",
-        error.message || "Não foi possível salvar o registro."
-      );
     } finally {
       setLoading(false);
     }

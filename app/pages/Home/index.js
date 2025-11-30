@@ -23,13 +23,12 @@ import {
   TouchableOpacity,
   Text,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useEffect, useCallback } from "react";
 import { Calendar } from "react-native-calendars";
-import ConfirmDialog from "../../components/Modal";
 import { useFocusEffect } from "@react-navigation/native";
+import ConfirmDialog from "../../components/Modal";
 
 export default function Home() {
   const [balanceData, setBalanceData] = useState({
@@ -41,12 +40,11 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
-
   const [dialogVisible, setDialogVisible] = useState(false);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
 
-  // ✅ Função para formatar data no padrão DD/MM/YYYY
+  // Função para formatar data no padrão DD/MM/YYYY
   const formatDate = (dateString) => {
     const d = new Date(dateString);
     const day = String(d.getDate()).padStart(2, "0");
@@ -55,21 +53,19 @@ export default function Home() {
     return `${day}/${month}/${year}`;
   };
 
-  // ✅ Carrega os dados da API
+  // Carrega os dados da API
   const loadHomeData = async (
     dateISO = new Date().toISOString().split("T")[0]
   ) => {
     const dateBR = formatDate(dateISO);
-    console.log("🔍 Carregando dados para:", dateBR);
 
     setLoading(true);
     setError(null);
 
     try {
       const balanceResponse = await getBalance(dateBR);
-      console.log("✅ Resposta bruta de /balance:", balanceResponse);
 
-      // ✅ Mapeia a resposta da API para o formato esperado
+      // Mapeamento de resposta da API para o formato esperado
       const mappedData = {
         balance: 0,
         income: 0,
@@ -93,12 +89,10 @@ export default function Home() {
         }
       });
 
-      console.log("✅ Dados mapeados:", mappedData);
       setBalanceData(mappedData);
 
-      // Movimentações (essa parte provavelmente já está certa)
       const movementsResponse = await getReceivesByDate(dateBR);
-      console.log("✅ Movimentações:", movementsResponse);
+
       setMovements(Array.isArray(movementsResponse) ? movementsResponse : []);
     } catch (err) {
       console.error("❌ Erro detalhado:", {
@@ -109,25 +103,24 @@ export default function Home() {
       setError(
         err.response?.data?.message || err.message || "Erro ao carregar dados"
       );
-      Alert.alert("Erro", "Não foi possível carregar os dados.");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Carrega ao montar
+  // Carrega ao montar
   useEffect(() => {
     loadHomeData();
   }, []);
 
-  // ✅ Recarrega quando a tela ganha foco (ex: após voltar do Register)
+  // Recarrega quando a tela ganha foco
   useFocusEffect(
     useCallback(() => {
       loadHomeData();
     }, [])
   );
 
-  // ✅ Deletar movimentação
+  // Deleta movimentação
   const handleDelete = async () => {
     if (!selectedItem) return;
 
@@ -138,10 +131,8 @@ export default function Home() {
       );
       setDialogVisible(false);
       setSelectedItem(null);
-      Alert.alert("Sucesso!", "Movimentação excluída.");
     } catch (error) {
       console.error("Erro ao deletar:", error);
-      Alert.alert("Erro", "Não foi possível excluir a movimentação.");
     }
   };
 
@@ -264,10 +255,10 @@ export default function Home() {
           >
             <Calendar
               onDayPress={(day) => {
-                const dateISO = day.dateString; // ex: "2025-11-30"
+                const dateISO = day.dateString;
                 setSelectedDate(dateISO);
                 setCalendarVisible(false);
-                loadHomeData(dateISO); // recarrega com a nova data
+                loadHomeData(dateISO);
               }}
               theme={{
                 todayTextColor: "#3B3DBF",

@@ -4,7 +4,7 @@ const api = axios.create({
   baseURL: "http://localhost:3333",
 });
 
-// Interceptor para adicionar o token Bearer automaticamente
+// Interceptador para adicionar o token Bearer automaticamente
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
