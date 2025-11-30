@@ -1,5 +1,6 @@
 import { createContext, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../services/api";
 
 export const AuthContext = createContext({});
@@ -28,13 +29,19 @@ function AuthProvider({ children }) {
   //? Login function
   async function signIn(email, password) {
     try {
-      await api.post("/login", {
+      const resp = await api.post("/login", {
         email: email,
         password: password,
       });
 
+      const { token } = resp.data;
+
+      await AsyncStorage.setItem("token", token);
+
       console.log("Login realizado com sucesso");
       setUser({ email });
+
+      return token;
     } catch (error) {
       console.log("Erro ao realizar login", error);
     }

@@ -5,11 +5,64 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { createReceive } from "../../services/financeService";
 
 export default function Register() {
   const [tipo, setTipo] = useState("receita");
+  const [nome, setNome] = useState(""); // para o campo "Nome"
+  const [valor, setValor] = useState(""); // para o campo "Valor"
+  const [loading, setLoading] = useState(false); // para o botão de loading
+
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const handleRegistrar = async () => {
+    // Validação simples
+    if (!nome.trim()) {
+      Alert.alert("Atenção", "Informe um nome para a movimentação.");
+      return;
+    }
+    if (!valor || isNaN(valor) || Number(valor) <= 0) {
+      Alert.alert("Atenção", "Informe um valor válido.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const payload = {
+        description: nome.trim(),
+        value: parseFloat(valor),
+        type: tipo, // "receita" ou "despesa"
+        date: formatDate(new Date()), // ex: "30/11/2025"
+      };
+
+      await createReceive(payload);
+
+      Alert.alert("Sucesso!", "Registro realizado com sucesso!");
+
+      // Limpa os campos
+      setNome("");
+      setValor("");
+    } catch (error) {
+      console.error("Erro ao registrar:", error);
+      Alert.alert(
+        "Erro",
+        error.message || "Não foi possível salvar o registro."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -20,6 +73,8 @@ export default function Register() {
         placeholder="Nome"
         placeholderTextColor="#999"
         style={styles.input}
+        value={nome}
+        onChangeText={setNome}
       />
 
       {/* Campo Valor */}
@@ -28,6 +83,8 @@ export default function Register() {
         placeholderTextColor="#999"
         keyboardType="numeric"
         style={styles.input}
+        value={valor}
+        onChangeText={setValor}
       />
 
       {/* Botões Receita / Despesa */}
@@ -56,8 +113,16 @@ export default function Register() {
       </View>
 
       {/* Botão Registrar */}
-      <TouchableOpacity style={styles.btnRegistrar}>
-        <Text style={styles.btnText}>Registrar</Text>
+      <TouchableOpacity
+        style={[styles.btnRegistrar, loading && { opacity: 0.7 }]}
+        onPress={handleRegistrar}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.btnText}>Registrar</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
